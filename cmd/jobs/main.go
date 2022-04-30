@@ -4,14 +4,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strings"
+
+	"github.com/bueti/yeoman/internal/db"
 )
 
 func Run() error {
 	log.Println("starting up yeoman job")
-	os.Mkdir("output", 0755)
 
+	db, err := db.NewDatabase()
+	if err != nil {
+		fmt.Println("Failed to connect to database")
+		return err
+	}
+
+	if err := db.MigrateDB(); err != nil {
+		fmt.Println("failed to migrate database")
+		return err
+	}
+
+	// GET all datasources
+	// for each datasource
+	// fetch the stuff
+	// transform it into a list of ips
+	// POST it to the database
+
+	// temp.
 	var urls = []string{
 		"https://bunnycdn.com/api/system/edgeserverlist",
 		"https://stripe.com/files/ips/ips_webhooks.json",
@@ -31,28 +48,14 @@ func Run() error {
 
 		defer resp.Body.Close()
 
-		tmp := strings.TrimPrefix(url, "https://")
-		file := strings.ReplaceAll(tmp, "/", "_")
-		f, err := os.Create("output/" + file)
-		if err != nil {
-			log.Fatal(err)
-			return err
-		}
-
-		defer f.Close()
-
-		_, err = f.ReadFrom(resp.Body)
-
-		if err != nil {
-			log.Fatal(err)
-		}
+		fmt.Println(resp)
 
 	}
 	return nil
 }
 
 func main() {
-	log.Println("Yeoman Job")
+	log.Println("~= Yeoman Job =~")
 	if err := Run(); err != nil {
 		fmt.Println(err)
 	}

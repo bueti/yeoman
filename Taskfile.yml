@@ -4,6 +4,7 @@ tasks:
   build:
     cmds:
       - go build -o jobs cmd/jobs/main.go
+      - go build -o jobs cmd/server/main.go
   test:
     cmds:
       - go test -v ./...
